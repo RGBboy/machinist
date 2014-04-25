@@ -7,7 +7,8 @@
  * Module Dependencies
  */
 
-var StateMock;
+var StateMock,
+    State = require('../../lib/state');
 
 /**
  * StateMock
@@ -17,10 +18,10 @@ var StateMock;
  */
 
 StateMock = function (sandbox) {
-  var state = sandbox.stub();
-  state.enter = sandbox.stub();
-  state.exit = sandbox.stub();
-  state.destroy = sandbox.stub();
+  var state = State();
+  sandbox.spy(state, 'enter');
+  sandbox.spy(state, 'exit');
+  sandbox.spy(state, 'destroy');
   return state;
 };
 
