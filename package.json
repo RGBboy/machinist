@@ -19,10 +19,11 @@
   "dependencies": {},
   "devDependencies": {
     "tape": "*",
-    "testling": "*"
+    "testling": "*",
+    "sinon": "*"
   },
   "testling": {
-    "files": [ "./test/*.spec.js"],
+    "files": [ "./test/*.spec.js", "./test/*.e2e.js"],
     "browsers": [
       "iexplore/9.0",
       "iexplore/10.0",
@@ -63,7 +64,7 @@
     ]
   },
   "scripts": {
-    "test": "./node_modules/.bin/tape ./test/*.spec.js"
+    "test": "./node_modules/.bin/tape ./test/*.spec.js ./test/*.e2e.js"
   },
   "license": "MIT"
 }
