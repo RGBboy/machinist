@@ -15,7 +15,101 @@ With [npm](http://npmjs.org) do:
 npm install machinist
 ```
 
+# Example
+
+``` javascript
+  var Machinist = require('machinist'),
+      locked = new Machinist.State(),
+      unlocked = new Machinist.State(),
+      turnstile = new Machinist.Machine(locked);
+
+  turnstile.addTransition('insert coin', locked, unlocked);
+  turnstile.addTransition('insert coin', unlocked, unlocked);
+  turnstile.addTransition('push', unlocked, locked);
+  turnstile.addTransition('push', locked, locked);
+
+  console.log(turnstile.state); // locked
+  turnstile.transition('insert coin');
+  console.log(turnstile.state); // unlocked
+  turnstile.transition('push');
+  console.log(turnstile.state); // locked
+```
+
 # API
+
+``` javascript
+  var Machinist = require('machinist);
+```
+
+## var state = Machinist.State()
+
+Create a new State object `state`.
+
+## state.enter()
+
+Signals the State that it is being transitioned in to. You should not need to 
+call this as it is taken care of by the Machine.
+
+## state.exit()
+
+Signals the State that it is being transitioned away from. You should not need 
+to call this as it is taken care of by the Machine.
+
+## state.destroy()
+
+Destroys the State.
+
+## var machine = Machinist.Machine(initialState)
+
+Create a new Machine object `machine`.
+
+## machine.addTransition(name, from, to)
+
+Creates a valid transition `name` that will switch from the State `from` to 
+the State `to`.
+
+Transitions must have a unique `name` and `from` parameters.
+
+## machine.transition(name)
+
+Executes the defined transition `name`. The transition must be added prior to 
+being called.
+
+## machine.destroy()
+
+Destroys the Machine.
+
+# Events
+
+## state.on('enter', cb)
+
+This event fires with `cb(state)` when the State is entered.
+
+## state.on('exit', cb)
+
+This event fires with `cb(state)` when the State is exited.
+
+## state.on('destroy', cb)
+
+This event fires with `cb(state)` when the State is destroyed.
+
+Users of a State should listen for the destroy event and clean up any 
+references they hold so the State can be garbage collected.
+
+## machine.on('transition', cb)
+
+This event fires with `cb(transitionName, fromState, toState)` when a 
+transition is executed.
+
+## machine.on('destroy', cb)
+
+This event fires with `cb(machine)` when the machine is destroyed.
+
+Users of a Machine should listen for the destroy event and clean up any 
+references they hold so the Machine can be garbage collected.
+
+Destroying a Machine will not destroy the States it uses. To destroy a State 
+you should call `state.destroy()`.
 
 # License 
 
