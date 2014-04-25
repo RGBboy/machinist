@@ -46,13 +46,13 @@ test('Turnstile example', function (t) {
   setup(t);
   t.plan(5);
   t.ok(turnstile.state === locked, 'turnstile initial state is locked');
-  turnstyle.transition('insert coin');
+  turnstile.transition('insert coin');
   t.ok(turnstile.state === unlocked, 'turnstile state is unlocked after insert coin transition');
-  turnstyle.transition('insert coin');
+  turnstile.transition('insert coin');
   t.ok(turnstile.state === unlocked, 'turnstile state is unlocked after insert coin transition');
-  turnstyle.transition('push');
+  turnstile.transition('push');
   t.ok(turnstile.state === locked, 'turnstile state is locked after push transition');
-  turnstyle.transition('push');
+  turnstile.transition('push');
   t.ok(turnstile.state === locked, 'turnstile state is locked after push transition');
   teardown(t);
 });
