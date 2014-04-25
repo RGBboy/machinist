@@ -38,7 +38,7 @@ npm install machinist
 # API
 
 ``` javascript
-  var Machinist = require('machinist);
+  var Machinist = require('machinist');
 ```
 
 ## var state = Machinist.State()
