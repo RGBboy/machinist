@@ -234,3 +234,28 @@ test('when destroy is called machine should remove all transitions', function (t
   }, 'Invalid transition: change');
   teardown(t);
 });
+
+test('when destroy is called on state, machine should remove all related transitions', function (t) {
+  var state2;
+  setup(t);
+  t.plan(2);
+  state2 = StateMock(sandbox);
+  machine = new Machine(state);
+  machine.addTransition('change', state, state2);
+  t.equal(machine.state, state);
+  state2.destroy();
+  t.throws(function () {
+    machine.transition('change');
+  }, 'Invalid transition: change');
+  teardown(t);
+});
+
+test('when destroy is called on the current state, machine should call state.exit and set machine.state to null', function (t) {
+  setup(t);
+  t.plan(2);
+  machine = new Machine(state);
+  state.destroy();
+  t.ok(state.exit.calledOnce, 'state.exit called once');
+  t.equal(machine.state, null);
+  teardown(t);
+});
