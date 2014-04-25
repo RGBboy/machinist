@@ -88,6 +88,21 @@ test('machine.addTransition should be a function', function (t) {
   teardown(t);
 });
 
+test('machine.addTransition should throw if name and from state are not unique', function (t) {
+  var state2,
+      state3;
+  setup(t);
+  t.plan(1);
+  state2 = StateMock(sandbox);
+  state3 = StateMock(sandbox);
+  machine = new Machine(state);
+  machine.addTransition('change', state, state2);
+  t.throws(function () {
+    machine.addTransition('change', state, state3);
+  });
+  teardown(t);
+});
+
 /**
  * machine.transition
  */
@@ -96,6 +111,75 @@ test('machine.transition should be a function', function (t) {
   setup(t);
   t.plan(1);
   t.equal(typeof machine.transition, 'function');
+  teardown(t);
+});
+
+test('machine.transition should execute an valid transition', function (t) {
+  var state2;
+  setup(t);
+  t.plan(2);
+  state2 = StateMock(sandbox);
+  machine = new Machine(state);
+  t.equal(machine.state, state);
+  machine.addTransition('change', state, state2);
+  machine.transition('change');
+  t.equal(machine.state, state2);
+  teardown(t);
+});
+
+test('machine should emit a transition event when executing a valid transition', function (t) {
+  var state2;
+  setup(t);
+  t.plan(4);
+  state2 = StateMock(sandbox);
+  machine = new Machine(state);
+  machine.addTransition('change', state, state2);
+  machine.on('transition', function (name, from, to) {
+    t.equal(name, 'change');
+    t.equal(from, state);
+    t.equal(to, state2);
+    t.pass('transition event fired');
+    teardown(t);
+  });
+  machine.transition('change');
+});
+
+test('machine should support the same transition name for different from states', function (t) {
+  var state2,
+      state3;
+  setup(t);
+  t.plan(7);
+  state2 = StateMock(sandbox);
+  state3 = StateMock(sandbox);
+  machine = new Machine(state);
+  machine.addTransition('change', state, state2);
+  machine.addTransition('change', state2, state3);
+  machine.once('transition', function (name, from, to) {
+    t.equal(name, 'change');
+    t.equal(from, state);
+    t.equal(to, state2);
+    machine.once('transition', function (name, from, to) {
+      t.equal(name, 'change');
+      t.equal(from, state2);
+      t.equal(to, state3);
+      t.pass('transition event fired');
+      teardown(t);
+    });
+    machine.transition('change');
+  });
+  machine.transition('change');
+});
+
+test('machine.transition should throw an error when executing an invalid transition', function (t) {
+  var state2;
+  setup(t);
+  t.plan(1);
+  state2 = StateMock(sandbox);
+  machine = new Machine(state);
+  machine.addTransition('change', state2, state);
+  t.throws(function () {
+    machine.transition('change');
+  }, 'Invalid transition: change');
   teardown(t);
 });
 
@@ -129,5 +213,24 @@ test('when destroy is called machine should remove all event listeners', functio
   machine.destroy();
   machine.emit('test');
   t.end();
+  teardown(t);
+});
+
+test('when destroy is called machine should remove all transitions', function (t) {
+  var state2;
+  setup(t);
+  t.plan(3);
+  state2 = StateMock(sandbox);
+  machine = new Machine(state);
+  machine.addTransition('change', state, state2);
+  machine.addTransition('change', state2, state);
+  machine.transition('change');
+  t.equal(machine.state, state2);
+  machine.transition('change');
+  t.equal(machine.state, state);
+  machine.destroy();
+  t.throws(function () {
+    machine.transition('change');
+  }, 'Invalid transition: change');
   teardown(t);
 });
