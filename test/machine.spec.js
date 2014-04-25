@@ -30,6 +30,6 @@ var teardown = function (t) {
  */
 
 test('Machine', function (t) {
-    t.plan(1);
-    t.ok(Machine, 'class should exist');
+  t.plan(1);
+  t.ok(Machine, 'class should exist');
 });

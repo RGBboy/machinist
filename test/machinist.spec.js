@@ -33,16 +33,16 @@ var teardown = function (t) {
  */
 
 test('Machinist', function (t) {
-    t.plan(1);
-    t.ok(Machinist, 'class should exist');
+  t.plan(1);
+  t.ok(Machinist, 'class should exist');
 });
 
 test('Machinist.Machine  should equal the Machine class', function (t) {
-    t.plan(1);
-    t.equal(Machinist.Machine, Machine);
+  t.plan(1);
+  t.equal(Machinist.Machine, Machine);
 });
 
 test('Machinist.State should equal the State class', function (t) {
-    t.plan(1);
-    t.equal(Machinist.State, State);
+  t.plan(1);
+  t.equal(Machinist.State, State);
 });
