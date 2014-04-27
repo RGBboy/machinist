@@ -23,7 +23,7 @@ var test = require('tape'),
 var setup = function (t) {
   sandbox = sinon.sandbox.create();
   state = StateMock(sandbox);
-  machine = new Machine();
+  machine = new Machine(state);
 };
 
 /**
@@ -57,6 +57,7 @@ test('machine should be an instance of EventEmitter', function (t) {
 test('when not passed an initial state machine.state should equal null', function (t) {
   setup(t);
   t.plan(1);
+  machine = Machine();
   t.equal(machine.state, null);
   teardown(t);
 });
@@ -64,7 +65,6 @@ test('when not passed an initial state machine.state should equal null', functio
 test('when passed an initial state machine.state should equal state', function (t) {
   setup(t);
   t.plan(1);
-  machine = new Machine(state);
   t.equal(machine.state, state);
   teardown(t);
 });
@@ -72,7 +72,6 @@ test('when passed an initial state machine.state should equal state', function (
 test('when passed an initial state, state.enter should be called', function (t) {
   setup(t);
   t.plan(1);
-  machine = new Machine(state);
   t.ok(state.enter.calledOnce, 'state.enter called once');
   teardown(t);
 });
@@ -95,7 +94,6 @@ test('machine.addTransition should throw if name and from state are not unique',
   t.plan(1);
   state2 = StateMock(sandbox);
   state3 = StateMock(sandbox);
-  machine = new Machine(state);
   machine.addTransition('change', state, state2);
   t.throws(function () {
     machine.addTransition('change', state, state3);
@@ -119,7 +117,6 @@ test('machine.transition should execute an valid transition', function (t) {
   setup(t);
   t.plan(2);
   state2 = StateMock(sandbox);
-  machine = new Machine(state);
   t.equal(machine.state, state);
   machine.addTransition('change', state, state2);
   machine.transition('change');
@@ -132,7 +129,6 @@ test('machine should emit a transition event when executing a valid transition',
   setup(t);
   t.plan(4);
   state2 = StateMock(sandbox);
-  machine = new Machine(state);
   machine.addTransition('change', state, state2);
   machine.on('transition', function (name, from, to) {
     t.equal(name, 'change');
@@ -151,7 +147,6 @@ test('machine should support the same transition name for different from states'
   t.plan(7);
   state2 = StateMock(sandbox);
   state3 = StateMock(sandbox);
-  machine = new Machine(state);
   machine.addTransition('change', state, state2);
   machine.addTransition('change', state2, state3);
   machine.once('transition', function (name, from, to) {
@@ -175,7 +170,6 @@ test('machine.transition should throw an error when executing an invalid transit
   setup(t);
   t.plan(1);
   state2 = StateMock(sandbox);
-  machine = new Machine(state);
   machine.addTransition('change', state2, state);
   t.throws(function () {
     machine.transition('change');
@@ -221,7 +215,6 @@ test('when destroy is called machine should remove all transitions', function (t
   setup(t);
   t.plan(3);
   state2 = StateMock(sandbox);
-  machine = new Machine(state);
   machine.addTransition('change', state, state2);
   machine.addTransition('change', state2, state);
   machine.transition('change');
@@ -240,7 +233,6 @@ test('when destroy is called on state, machine should remove all related transit
   setup(t);
   t.plan(2);
   state2 = StateMock(sandbox);
-  machine = new Machine(state);
   machine.addTransition('change', state, state2);
   t.equal(machine.state, state);
   state2.destroy();
@@ -253,7 +245,6 @@ test('when destroy is called on state, machine should remove all related transit
 test('when destroy is called on the current state, machine should call state.exit and set machine.state to null', function (t) {
   setup(t);
   t.plan(2);
-  machine = new Machine(state);
   state.destroy();
   t.ok(state.exit.calledOnce, 'state.exit called once');
   t.equal(machine.state, null);
