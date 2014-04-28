@@ -63,6 +63,12 @@ Destroys the State.
 
 Create a new Machine object `machine`.
 
+`machine.state` is set to `initialState`.
+
+## machine.state
+
+Reference to the current state  the machine is in.
+
 ## machine.addTransition(name, from, to)
 
 Creates a valid transition `name` that will switch from the State `from` to 
