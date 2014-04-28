@@ -99,10 +99,13 @@ test('when destroy is called, state should emit a destroy event', function (t) {
 
 test('when destroy is called, state should remove all event listeners', function (t) {
   state = new State();
-  state.on('test', function () {
-    t.fail('test event fired');
-  });
+  t.plan(3);
+  state.on('enter', function () {});
+  state.on('exit', function () {});
+  state.on('destroy', function () {});
   state.destroy();
-  state.emit('test');
+  t.equal(state.listeners('enter').length, 0);
+  t.equal(state.listeners('exit').length, 0);
+  t.equal(state.listeners('destroy').length, 0);
   t.end();
 });

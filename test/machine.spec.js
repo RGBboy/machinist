@@ -200,11 +200,12 @@ test('when destroy is called machine should emit an destroy event', function (t)
 
 test('when destroy is called machine should remove all event listeners', function (t) {
   setup(t);
-  machine.on('test', function () {
-    t.fail('test event fired');
-  });
+  t.plan(2);
+  machine.on('transition', function () {});
+  machine.on('destroy', function () {});
   machine.destroy();
-  machine.emit('test');
+  t.equal(machine.listeners('transition').length, 0);
+  t.equal(state.listeners('destroy').length, 0);
   t.end();
   teardown(t);
 });
