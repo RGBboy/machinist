@@ -54,11 +54,10 @@ test('machine should be an instance of EventEmitter', function (t) {
   teardown(t);
 });
 
-test('when not passed an initial state machine.state should equal null', function (t) {
+test('when not passed an initial state machine should throw', function (t) {
   setup(t);
   t.plan(1);
-  machine = Machine();
-  t.equal(machine.state, null);
+  t.throws(Machine, 'Machine expects an initial state.');
   teardown(t);
 });
 
@@ -242,11 +241,9 @@ test('when destroy is called on state, machine should remove all related transit
   teardown(t);
 });
 
-test('when destroy is called on the current state, machine should call state.exit and set machine.state to null', function (t) {
+test('when destroy is called on the current state, machine should throw', function (t) {
   setup(t);
-  t.plan(2);
-  state.destroy();
-  t.ok(state.exit.calledOnce, 'state.exit called once');
-  t.equal(machine.state, null);
+  t.plan(1);
+  t.throws(state.destroy, 'state.destroy called on machine.state.');
   teardown(t);
 });
