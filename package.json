@@ -1,7 +1,7 @@
 {
   "name": "machinist",
   "version": "0.0.2",
-  "description": "Simple State Machines",
+  "description": "Simple hierarchical state machines.",
   "keywords": [
     "fsm",
     "state machine",

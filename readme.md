@@ -1,6 +1,6 @@
 # Machinist
 
-Simple state machines.
+Simple hierarchical state machines.
 
 [![Browser Support](https://ci.testling.com/rgbboy/machinist.png)
 ](https://ci.testling.com/RGBboy/machinist)
@@ -15,13 +15,15 @@ With [npm](http://npmjs.org) do:
 npm install machinist
 ```
 
-# Example
+# Examples
+
+## Turnstile
 
 ``` javascript
   var Machinist = require('machinist'),
-      locked = new Machinist.State(),
-      unlocked = new Machinist.State(),
-      turnstile = new Machinist.Machine(locked);
+      locked = Machinist(),
+      unlocked = Machinist(),
+      turnstile = Machinist(locked);
 
   turnstile.addTransition('insert coin', locked, unlocked);
   turnstile.addTransition('insert coin', unlocked, unlocked);
@@ -29,10 +31,48 @@ npm install machinist
   turnstile.addTransition('push', locked, locked);
 
   console.log(turnstile.state); // locked
-  turnstile.transition('insert coin');
+  turnstile.go('insert coin');
   console.log(turnstile.state); // unlocked
-  turnstile.transition('push');
+  turnstile.go('push');
   console.log(turnstile.state); // locked
+```
+
+## Game State Manager
+
+Machinist creates objects which are both machine and states. This allows you 
+to create hierarchical state machines like this Game State Manager:
+
+``` javascript
+  var Machinist = require('machinist'),
+      menu = Machinist(),
+      play = Machinist(),
+      pause = Machinist(),
+      gameState = Machinist(menu);
+
+  gameState.addTransition('play', menu, play);
+  gameState.addTransition('menu', play, menu);
+
+  play.addTransition('pause', null, pause);
+  play.addTransition('play', pause, null);
+
+  play.on('exit', function () {
+    if (play.state === pause) {
+      play.go('play');
+    };
+  });
+
+  console.log(gameState.state); // menu
+  console.log(play.state); // null
+  gameState.go('play');
+  console.log(gameState.state); // play
+  console.log(play.state); // null
+  play.go('pause');
+  console.log(gameState.state); // play
+  console.log(play.state); // pause
+  play.go('menu');
+  console.log(gameState.state); // menu
+  console.log(play.state); // null
+
 ```
 
 # API
@@ -41,71 +81,61 @@ npm install machinist
   var Machinist = require('machinist');
 ```
 
-## var state = Machinist.State()
+## var machine = Machinist(initialState=null)
 
-Create a new State object `state`.
-
-## state.enter()
-
-Signals the State that it is being transitioned in to. You should not need to 
-call this as it is taken care of by the Machine.
-
-## state.exit()
-
-Signals the State that it is being transitioned away from. You should not need 
-to call this as it is taken care of by the Machine.
-
-## state.destroy()
-
-Destroys the State.
-
-## var machine = Machinist.Machine(initialState)
-
-Create a new Machine object `machine`.
+Create a new Machinist object `machine`.
 
 `machine.state` is set to `initialState`.
 
 ## machine.state
 
-Reference to the current state  the machine is in.
+Reference to the current state the machine is in.
 
 ## machine.addTransition(name, from, to)
 
-Creates a valid transition `name` that will switch from the State `from` to 
-the State `to`.
+Creates a valid transition `name` that will switch from the state `from` to 
+the state `to`.
 
 Transitions must have a unique `name` and `from` parameters.
 
-## machine.transition(name)
+## machine.go(name)
 
 Executes the defined transition `name`. The transition must be added prior to 
 being called.
 
+## machine.enter()
+
+Signals the machine that it is being transitioned in to. You should not need to 
+call this as it is taken care of internally when `machine.go` is called.
+
+## machine.exit()
+
+Signals the machine that it is being transitioned away from. You should not need 
+to call this as it is taken care of internally when `machine.go` is called.
+
 ## machine.destroy()
 
-Destroys the Machine.
+Destroys the machine.
 
 # Events
 
 ## state.on('enter', cb)
 
-This event fires with `cb(state)` when the State is entered.
+This event fires with `cb(machine)` when the machine is entered.
 
 ## state.on('exit', cb)
 
-This event fires with `cb(state)` when the State is exited.
-
-## state.on('destroy', cb)
-
-This event fires with `cb(state)` when the State is destroyed.
-
-Users of a State should listen for the destroy event and clean up any 
-references they hold so the State can be garbage collected.
+This event fires with `cb(machine)` when the machine is exited.
 
 ## machine.on('transition', cb)
 
 This event fires with `cb(transitionName, fromState, toState)` when a 
 transition is executed.
+
+## machine.on('transitionnotfound', cb)
+
+This event fires with `cb(transitionName)` when a transition is called but 
+a valid one does not exist for the machine `go` was called on.
 
 ## machine.on('destroy', cb)
 
@@ -114,8 +144,8 @@ This event fires with `cb(machine)` when the machine is destroyed.
 Users of a Machine should listen for the destroy event and clean up any 
 references they hold so the Machine can be garbage collected.
 
-Destroying a Machine will not destroy the States it uses. To destroy a State 
-you should call `state.destroy()`.
+Destroying a Machine will not destroy the machines it transitions between. To destroy them 
+you should call their `destroy` method.
 
 # License 
 
