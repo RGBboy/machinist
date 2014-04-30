@@ -19,9 +19,9 @@ var test = require('tape'),
  */
 
 var setup = function (t) {
-  locked = new Machinist.State(),
-  unlocked = new Machinist.State(),
-  turnstile = new Machinist.Machine(locked);
+  locked = new Machinist(),
+  unlocked = new Machinist(),
+  turnstile = new Machinist(locked);
   turnstile.addTransition('insert coin', locked, unlocked);
   turnstile.addTransition('insert coin', unlocked, unlocked);
   turnstile.addTransition('push', unlocked, locked);
@@ -46,13 +46,13 @@ test('Turnstile example', function (t) {
   setup(t);
   t.plan(5);
   t.ok(turnstile.state === locked, 'turnstile initial state is locked');
-  turnstile.transition('insert coin');
+  turnstile.go('insert coin');
   t.ok(turnstile.state === unlocked, 'turnstile state is unlocked after insert coin transition');
-  turnstile.transition('insert coin');
+  turnstile.go('insert coin');
   t.ok(turnstile.state === unlocked, 'turnstile state is unlocked after insert coin transition');
-  turnstile.transition('push');
+  turnstile.go('push');
   t.ok(turnstile.state === locked, 'turnstile state is locked after push transition');
-  turnstile.transition('push');
+  turnstile.go('push');
   t.ok(turnstile.state === locked, 'turnstile state is locked after push transition');
   teardown(t);
 });
