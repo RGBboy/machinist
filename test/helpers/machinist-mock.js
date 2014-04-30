@@ -1,28 +1,28 @@
 'use strict';
 /*!
- * State Mock
+ * Machinist Mock
  */
 
 /**
  * Module Dependencies
  */
 
-var StateMock,
-    State = require('../../lib/state');
+var MachinistMock,
+    Machinist = require('../../');
 
 /**
- * StateMock
+ * MachinistMock
  *
  * @param {Object} sandbox, Sinon Sandbox
- * @return {StateMock}
+ * @return {MachinistMock}
  */
 
-StateMock = function (sandbox) {
-  var state = State();
+MachinistMock = function (sandbox) {
+  var state = Machinist();
   sandbox.spy(state, 'enter');
   sandbox.spy(state, 'exit');
   sandbox.spy(state, 'destroy');
   return state;
 };
 
-exports = module.exports = StateMock;
+exports = module.exports = MachinistMock;
