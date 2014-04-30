@@ -5,7 +5,8 @@
   "keywords": [
     "fsm",
     "state machine",
-    "state"
+    "state",
+    "hierarchical"
   ],
   "repository" : {
     "type" : "git", 
