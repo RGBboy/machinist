@@ -13,6 +13,9 @@ var Machinist,
 /**
  * Machinist
  *
+ * @param {Machinist} state, initial state
+ * @param {Function} cb, addTransition callback
+ * @returns {Machinist}
  * @api public
  */
 Machinist = function (state, cb) {

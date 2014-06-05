@@ -81,11 +81,13 @@ to create hierarchical state machines like this Game State Manager:
   var Machinist = require('machinist');
 ```
 
-## var machine = Machinist(initialState=null)
+## var machine = Machinist(initialState=null, cb=null)
 
 Create a new Machinist object `machine`.
 
 `machine.state` is set to `initialState`.
+
+`cb` will be called before the intialState is transitioned to.
 
 ## machine.state
 
