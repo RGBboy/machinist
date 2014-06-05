@@ -77,6 +77,29 @@ test('when passed an initial state, state.enter should be called', function (t) 
   teardown(t);
 });
 
+test('when passed an addTransition callback, it should be called before state.enter', function (t) {
+  setup(t);
+  t.plan(2);
+  state = MachinistMock(sandbox);
+  machinist = Machinist(state, function () {
+    t.notok(state.enter.called, 'state.enter not called');
+  });
+  t.ok(state.enter.called, 'state.enter called');
+  teardown(t);
+});
+
+test('when passed an addTransition callback, it should be called with state.addTransition', function (t) {
+  var addTransition;
+  setup(t);
+  t.plan(1);
+  state = MachinistMock(sandbox);
+  machinist = Machinist(state, function (aAddTransition) {
+    addTransition = aAddTransition;
+  });
+  t.equal(machinist.addTransition, addTransition);
+  teardown(t);
+});
+
 /**
  * machinist.addTransition
  */

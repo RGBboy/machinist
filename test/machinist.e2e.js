@@ -77,3 +77,23 @@ test('Game State example', function (t) {
   t.equal(play.state, null);
 
 });
+
+test('addTransition on construction example', function (t) {
+
+  var setup = Machinist(),
+      play = Machinist(),
+      state;
+
+  setup.on('enter', function () {
+    setup.go('play');
+  });
+
+  t.plan(1);
+
+  state = Machinist(setup, function (addTransition) {
+    addTransition('play', setup, play);
+  })
+
+  t.equal(state.state, play);
+
+});

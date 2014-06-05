@@ -15,7 +15,7 @@ var Machinist,
  *
  * @api public
  */
-Machinist = function (state) {
+Machinist = function (state, cb) {
 
   var self = new EventEmitter(),
       transitions = {};
@@ -165,7 +165,12 @@ Machinist = function (state) {
    if (self.state) {
      self.state.once('destroy', throwOnDestroy);
      self.state.on('transitionnotfound', self.go);
+     if (cb) {
+       cb(self.addTransition);
+     };
      self.state.enter();
+   } else if (cb) {
+     cb(self.addTransition);
    };
 
   return self;
